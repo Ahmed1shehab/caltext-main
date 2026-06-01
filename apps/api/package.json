@@ -1,0 +1,28 @@
+{
+  "name": "@caltext/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev",
+    "dev:inspect": "workflow inspect runs --web",
+    "build": "nitro build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^3.0.52",
+    "@caltext/ai": "*",
+    "@caltext/db": "*",
+    "@caltext/shared": "*",
+    "ai": "^6.0.156",
+    "evlog": "^2.11.1",
+    "heic-convert": "^2.1.0",
+    "hono": "^4.12.12",
+    "nitro": "^3.0.260311-beta",
+    "sharp": "^0.34.5",
+    "workflow": "^4.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "Metadata": {
+    "title": "caltext - Your calorie tracker that lives in your texts",
+    "description": "Send a photo or describe your meal. AI handles the rest — calories, macros, streaks, all in iMessage.",
+    "ogTitle": "caltext - Your calorie tracker that lives in your texts",
+    "ogDescription": "Send a photo or describe your meal. AI handles the rest — calories, macros, streaks, all in iMessage."
+  },
+  "Nav": {
+    "logo": "caltext",
+    "features": "Features",
+    "faqs": "FAQs",
+    "getStarted": "Get Started"
+  },
+  "Hero": {
+    "eyebrow": "Meet caltext",
+    "headline": "Track calories from your\u00a0texts.",
+    "subtitle": "Send a photo or describe your meal. AI handles the rest\u00a0\u2014 calories, macros, streaks, all in iMessage.",
+    "trustLine": "Free trial \u00b7 No app required",
+    "socialProof": "67,000+ tracking calories"
+  },
+  "IMessageButton": {
+    "label": "Get Started in Messages",
+    "shortLabel": "Get Started",
+    "smsBody": "Hi! I'd like to get started with caltext."
+  },
+  "Features": {
+    "heading": "Everything happens in your texts",
+    "subtitle": "No app to download. No accounts to create. Just iMessage.",
+    "snapOrText": {
+      "title": "Snap or Text",
+      "description": "Send a meal photo and see calories, macros, and easy tweaks before you log it."
+    },
+    "dailySummaries": {
+      "title": "Daily Summaries",
+      "description": "See where your calories and macros stand so you know what you have left today."
+    },
+    "smartReminders": {
+      "title": "Smart Reminders",
+      "description": "Get meal-time reminders that help you stay on top of calories and macros."
+    },
+    "chat": {
+      "snapOrText": {
+        "bot0": {
+          "breakfast": "Good morning. Send breakfast when you're ready and I'll estimate the calories and macros.",
+          "lunch": "Lunch time. Send a photo and I'll estimate the calories and macros for you.",
+          "dinner": "Dinner check-in. Send a photo and I'll break down the calories and macros."
+        },
+        "user1": "What if I skip the pita?",
+        "bot1": "That looks like a Mediterranean bowl. I'd log it at about 690 kcal.\n\n🫓 Pita wedge 160 kcal\n🧆 Chickpeas 210 kcal\n🥒 Cucumber, tomato & peppers 70 kcal\n🫒 Olives 90 kcal\n🥣 Yogurt sauce 80 kcal\n🌿 Greens, figs & extras 80 kcal\n\nEstimated macros: 58g carbs, 32g fat, 19g protein\n\nYou're at 1,420 / 2,100 kcal today with 680 left. If you want, I can adjust it for no pita, less sauce, or a smaller portion.",
+        "bot2": "Good call, dropping the pita saves you 160 kcal. Here's the updated version:",
+        "bot3": "🧆 Chickpeas 210 kcal\n🥒 Cucumber, tomato & peppers 70 kcal\n🫒 Olives 90 kcal\n🥣 Yogurt sauce 80 kcal\n🌿 Greens, figs & extras 80 kcal\n\nTotal: ~530 kcal\nMacros: 30g carbs · 29g fat · 19g protein\n\nThat leaves you about 840 kcal for the rest of the day. Want me to log this version?"
+      },
+      "dailySummaries": {
+        "bot1": "Quick check-in for today:\n━━━━━━━━━━━━\n☀️ Protein oats 320 kcal\n🥗 Chicken bowl 410 kcal\n🍫 Afternoon snack 180 kcal\n🥘 Dinner 510 kcal\n\nTotal: 1,420 / 2,100 kcal\nProtein: 112g\n680 kcal left\n\nYou're in a really good spot today. Want me to suggest a high-protein snack for later?"
+      },
+      "smartReminders": {
+        "bot1": {
+          "breakfast": "Good morning. You've got room for breakfast. Want to send a photo or just text me what you're having?",
+          "lunch": "Hey, lunch check-in. You've got about 1,180 kcal left today. Want to send a photo or just text me what you're having?",
+          "dinner": "Dinner check-in. You've still got room left today. Want to send a photo or just text me what you're having?"
+        },
+        "user1": "Chicken burrito bowl with rice, beans and guac",
+        "bot2": "Nice. I'd put that around 760 kcal depending on the scoop sizes.\n\nI can log 760 now, or tighten it up if you send a photo."
+      }
+    }
+  },
+  "HowItWorks": {
+    "heading": "How it works",
+    "subtitle": "Three steps. No downloads. No setup screens.",
+    "step1": {
+      "title": "Text caltext",
+      "description": "Send a message to get started. caltext learns your goals, body stats, and preferences in a quick chat."
+    },
+    "step2": {
+      "title": "Log Your Meals",
+      "description": "Text what you ate or snap a photo. AI identifies the food, looks up nutrition, and logs it instantly."
+    },
+    "step3": {
+      "title": "Stay on Track",
+      "description": "Get daily summaries, weekly recaps, streak tracking, and friendly reminders at meal times."
+    }
+  },
+  "Faq": {
+    "heading": "FAQs",
+    "q1": "How does caltext track my calories?",
+    "a1": "Text your meals or snap a photo. caltext uses AI to identify the food and portions, then looks up accurate nutrition data from the USDA database. It tracks your calories, protein, carbs, fat, and fiber automatically.",
+    "q2": "What do I need to get started?",
+    "a2": "Just an iPhone with iMessage. No app to download, no account to create. Text caltext and you're up and running in under 2 minutes.",
+    "q3": "Do I need to weigh my food?",
+    "a3": "Not at all. Rough estimates work great — just describe portions naturally like \"a big bowl of pasta\" or \"two slices of pizza.\" Photos work even better since the AI can estimate portion sizes visually.",
+    "q4": "How does the free trial work?",
+    "a4": "You get full access to all features during the trial period. Track meals, get summaries, set reminders — everything. No credit card required to start.",
+    "q5": "What languages are supported?",
+    "a5": "caltext detects your language from your phone number and responds accordingly. English and Swedish are fully supported, with more languages coming soon."
+  },
+  "BottomCta": {
+    "heading": "Start tracking today",
+    "subtitle": "Open iMessage and text caltext. You'll be tracking calories in under two minutes.",
+    "buttonHint": "Opens iMessage on your Mac or iPhone",
+    "qrLabel": "Scan with your phone"
+  },
+  "PhoneMockup": {
+    "header": "caltext",
+    "inputPlaceholder": "iMessage",
+    "lockTitle": "caltext",
+    "lockBody": "Lunch logged. 470 kcal added to your day.",
+    "lockBodyLogging": "Got your photo. Let me estimate it.",
+    "lockBodySummary": "📊 Here's your daily wrap-up.",
+    "lockBodyReminder": {
+      "breakfast": "☀️ Breakfast time! Snap a photo and I'll handle the rest.",
+      "lunch": "🥗 Lunch time! Snap a photo and I'll handle the rest.",
+      "dinner": "🍽️ Dinner time! Snap a photo and I'll handle the rest."
+    },
+    "msg1": "Had a chicken salad with avocado for lunch 🥗",
+    "msg2": "Nice lunch! 🥗🥑\n\n🍗 Grilled chicken — 285 kcal\n🥑 Avocado — 160 kcal\n🥬 Mixed greens — 25 kcal\n\nTotal: 470 kcal\nToday: 1,240 / 2,100 kcal\n\n860 left — you're on track! 🔥",
+    "msg3": "What's my streak?",
+    "msg4": "12 days straight! 🔥🔥🔥\nYour longest ever. Keep it going!"
+  },
+  "Privacy": {
+    "heading": "Privacy Policy",
+    "lastUpdated": "Last updated: April 2026",
+    "intro": "Cal Text (\"Caltext\", \"we\", \"us\") is committed to protecting your privacy. This policy explains what data we collect, how we use it, and your rights.",
+    "dataCollection": {
+      "title": "Data We Collect",
+      "body": "When you use Caltext, we collect:\n\n• Your phone number (to identify your account and deliver messages via iMessage)\n• Your name, age, height, and weight (to calculate your personalized calorie target)\n• Sex, if you choose to share it — used only for the standard calorie formula; if you skip it, we use a neutral estimate\n• Meal descriptions and photos you send us\n• Nutrition and calorie data derived from your meals\n• Your timezone and country (detected from your phone number for localization)"
+    },
+    "dataUsage": {
+      "title": "How We Use Your Data",
+      "body": "We use your data to:\n\n• Provide personalized calorie and macro tracking\n• Generate daily summaries, weekly recaps, and meal reminders\n• Improve the accuracy of our food identification and nutrition estimates\n• Communicate with you via iMessage"
+    },
+    "dataStorage": {
+      "title": "Data Storage & Security",
+      "body": "Connections to our website and services use TLS (HTTPS). Your phone number is encrypted at rest using AES. Message history, meal log content, onboarding data during setup, and similar payloads are stored as encrypted application-layer blobs. Your profile fields (such as name and calorie target) are stored in our database with strict access controls. All data is stored on secure, access-controlled servers. We use industry-standard security measures to protect your information."
+    },
+    "thirdParty": {
+      "title": "Third-Party Services",
+      "body": "We use the following third-party services to operate Caltext:\n\n• OpenAI — for food identification and natural language processing\n• USDA FoodData Central — for nutrition data lookup\n• Sendblue — for iMessage delivery\n\nThese services process data as necessary to provide our features. We do not sell your data to third parties."
+    },
+    "retention": {
+      "title": "Data Retention",
+      "body": "We retain your meal logs and profile data for as long as your account is active. You can request deletion of your data at any time by contacting us."
+    },
+    "rights": {
+      "title": "Your Rights",
+      "body": "You have the right to:\n\n• Request a copy of your data\n• Request correction of inaccurate data\n• Request deletion of your data\n• Withdraw consent at any time by stopping use of the service"
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "If you have questions about this privacy policy, contact us at privacy@caltext.ai."
+    }
+  },
+  "Terms": {
+    "heading": "Terms of Service",
+    "lastUpdated": "Last updated: April 2026",
+    "intro": "By using Cal Text (\"Caltext\", \"the Service\"), you agree to these terms. Please read them carefully.",
+    "eligibility": {
+      "title": "Eligibility",
+      "body": "You must be at least 16 years old and have access to an iPhone with iMessage to use Caltext."
+    },
+    "service": {
+      "title": "The Service",
+      "body": "Caltext is an AI-powered calorie and nutrition tracking assistant that operates through iMessage. The service includes meal logging, daily summaries, weekly recaps, streak tracking, and meal-time reminders."
+    },
+    "accuracy": {
+      "title": "Nutrition Accuracy",
+      "body": "Caltext provides estimates of calories and macronutrients based on AI analysis and the USDA FoodData Central database. These are estimates and should not be considered exact measurements. Caltext is not a medical device and does not provide medical or dietary advice. Consult a healthcare professional for specific dietary needs."
+    },
+    "account": {
+      "title": "Your Account",
+      "body": "Your account is identified by your phone number. You are responsible for all activity associated with your phone number. Do not share access to your iMessage account with others for the purpose of using Caltext."
+    },
+    "ip": {
+      "title": "Intellectual Property",
+      "body": "All content, features, and functionality of Caltext are owned by Caltext and are protected by copyright and other intellectual property laws."
+    },
+    "liability": {
+      "title": "Limitation of Liability",
+      "body": "Caltext is provided \"as is\" without warranties of any kind. We are not liable for any damages arising from your use of the service, including but not limited to health outcomes based on nutrition estimates provided by the service."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "body": "We may update these terms from time to time. Continued use of Caltext after changes constitutes acceptance of the new terms."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "If you have questions about these terms, contact us at support@caltext.ai."
+    }
+  },
+  "Footer": {
+    "logo": "caltext",
+    "tagline": "Calorie tracking that lives in your texts.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "copyright": "© {year} caltext",
+    "x": "X",
+    "instagram": "Instagram",
+    "tiktok": "TikTok"
+  }
+}

@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: var(--font-jakarta);
+  --font-body: var(--font-inter);
+  --font-logo: var(--font-logo-face);
+
+  --color-bg: #f6f4f1;
+  --color-card: #edeae6;
+  --color-elevated: #e5e2dd;
+  --color-primary: #2c2825;
+  --color-secondary: #7a746e;
+  --color-muted: #a39d96;
+  --color-accent: #34c759;
+  --color-accent-hover: #2db84e;
+  --color-border: #ddd9d4;
+  --color-imessage: #34c759;
+  --color-imessage-gray: #ddd9d4;
+
+  --animate-fade-in-up: fade-in-up 0.6s ease-out both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-primary font-body antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-heading;
+  }
+}

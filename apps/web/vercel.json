@@ -1,0 +1,6 @@
+{
+  "regions": ["iad1", "fra1", "hnd1"],
+  "installCommand": "",
+  "ignoreCommand": "exit 0",
+  "bunVersion": "1.x"
+}

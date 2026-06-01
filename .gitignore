@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.output/
+.next/
+.turbo/
+.env
+.env.local
+*.tsbuildinfo
+bun.lock
+.DS_Store
+.workflow-data/
+.swc

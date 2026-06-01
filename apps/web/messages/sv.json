@@ -1,0 +1,199 @@
+{
+  "Metadata": {
+    "title": "caltext - Din kaloriräknare som lever i dina sms",
+    "description": "Skicka ett foto eller beskriv din måltid. AI sköter resten — kalorier, makros, streaks, allt i iMessage.",
+    "ogTitle": "caltext - Din kaloriräknare som lever i dina sms",
+    "ogDescription": "Skicka ett foto eller beskriv din måltid. AI sköter resten — kalorier, makros, streaks, allt i iMessage."
+  },
+  "Nav": {
+    "logo": "caltext",
+    "features": "Funktioner",
+    "faqs": "Vanliga frågor",
+    "getStarted": "Kom igång"
+  },
+  "Hero": {
+    "eyebrow": "Möt caltext",
+    "headline": "Din kaloriräknare som lever i dina\u00a0sms.",
+    "subtitle": "Skicka ett foto eller beskriv din måltid. AI sköter resten\u00a0\u2014 kalorier, makros, streaks, allt i iMessage.",
+    "trustLine": "Gratis provperiod \u00b7 Ingen app krävs",
+    "socialProof": "67 000+ räknar kalorier"
+  },
+  "IMessageButton": {
+    "label": "Kom igång i Meddelanden",
+    "shortLabel": "Kom igång",
+    "smsBody": "Hej! Jag vill komma igång med caltext."
+  },
+  "Features": {
+    "heading": "Allt händer i dina sms",
+    "subtitle": "Ingen app att ladda ner. Inga konton att skapa. Bara iMessage.",
+    "snapOrText": {
+      "title": "Fota eller skriv",
+      "description": "Skicka en matbild och se kalorier, makros och enkla justeringar innan du loggar."
+    },
+    "dailySummaries": {
+      "title": "Dagliga sammanfattningar",
+      "description": "Se var du ligger på kalorier och makros så du vet vad du har kvar idag."
+    },
+    "smartReminders": {
+      "title": "Smarta påminnelser",
+      "description": "Få påminnelser vid måltider så att det blir lätt att hålla koll på kalorier och makros."
+    },
+    "chat": {
+      "snapOrText": {
+        "bot0": {
+          "breakfast": "God morgon. Skicka frukosten när du är redo så uppskattar jag kalorier och makros.",
+          "lunch": "Lunchdags. Skicka en bild så uppskattar jag kalorier och makros åt dig.",
+          "dinner": "Middagskoll. Skicka en bild så bryter jag ner kalorier och makros."
+        },
+        "user1": "Vad händer om jag skippar pitan?",
+        "bot1": "Det där ser ut som en medelhavsbowl. Jag hade loggat den på cirka 690 kcal.\n\n🫓 Pita 160 kcal\n🧆 Kikärtor 210 kcal\n🥒 Gurka, tomat och paprika 70 kcal\n🫒 Oliver 90 kcal\n🥣 Yoghurtsås 80 kcal\n🌿 Grönt, fikon och tillbehör 80 kcal\n\nUppskattade makros: 58g kolhydrater, 32g fett, 19g protein\n\nDu ligger på 1 420 / 2 100 kcal idag och har 680 kvar. Om du vill kan jag justera för ingen pita, mindre sås eller en mindre portion.",
+        "bot2": "Bra tänkt, utan pitan sparar du 160 kcal. Här är den uppdaterade versionen:",
+        "bot3": "🧆 Kikärtor 210 kcal\n🥒 Gurka, tomat och paprika 70 kcal\n🫒 Oliver 90 kcal\n🥣 Yoghurtsås 80 kcal\n🌿 Grönt, fikon och tillbehör 80 kcal\n\nTotalt: ~530 kcal\nMakros: 30g kolhydrater · 29g fett · 19g protein\n\nDå har du ungefär 840 kcal kvar för resten av dagen. Vill du att jag loggar den här versionen?"
+      },
+      "dailySummaries": {
+        "bot1": "Snabb koll på idag:\n━━━━━━━━━━━━\n☀️ Protein-gröt 320 kcal\n🥗 Kycklingbowl 410 kcal\n🍫 Eftermiddagssnack 180 kcal\n🥘 Middag 510 kcal\n\nTotalt: 1 420 / 2 100 kcal\nProtein: 112g\n680 kcal kvar\n\nDu ligger riktigt bra till idag. Vill du att jag föreslår ett proteinrikt kvällssnack?"
+      },
+      "smartReminders": {
+        "bot1": {
+          "breakfast": "God morgon. Du har gott om utrymme för frukost. Vill du skicka en bild eller bara skriva vad du äter?",
+          "lunch": "Hej, lunchkoll. Du har ungefär 1 180 kcal kvar idag. Vill du skicka en bild eller bara skriva vad du äter?",
+          "dinner": "Middagskoll. Du har fortfarande utrymme kvar idag. Vill du skicka en bild eller bara skriva vad du äter?"
+        },
+        "user1": "Kycklingburritobowl med ris, bönor och guacamole",
+        "bot2": "Nice. Jag hade lagt den runt 760 kcal beroende på portionsstorleken.\n\nJag kan logga 760 direkt, eller göra det mer exakt om du skickar en bild."
+      }
+    }
+  },
+  "HowItWorks": {
+    "heading": "Så fungerar det",
+    "subtitle": "Tre steg. Inga nedladdningar. Inga inställningar.",
+    "step1": {
+      "title": "Skriv till caltext",
+      "description": "Skicka ett meddelande för att komma igång. caltext lär sig dina mål, kroppsmått och preferenser i en snabb chatt."
+    },
+    "step2": {
+      "title": "Logga dina måltider",
+      "description": "Skriv vad du åt eller fota din mat. AI identifierar maten, slår upp näringsvärden och loggar det direkt."
+    },
+    "step3": {
+      "title": "Håll koll",
+      "description": "Få dagliga sammanfattningar, veckorapporter, streak-spårning och vänliga påminnelser vid måltider."
+    }
+  },
+  "Faq": {
+    "heading": "Vanliga frågor",
+    "q1": "Hur räknar caltext mina kalorier?",
+    "a1": "Skriv vad du ätit eller fota din mat. caltext använder AI för att identifiera maten och portionerna, sedan slår den upp exakta näringsvärden från USDA-databasen. Den räknar kalorier, protein, kolhydrater, fett och fiber automatiskt.",
+    "q2": "Vad behöver jag för att komma igång?",
+    "a2": "Bara en iPhone med iMessage. Ingen app att ladda ner, inget konto att skapa. Skriv till caltext så är du igång på under 2 minuter.",
+    "q3": "Behöver jag väga min mat?",
+    "a3": "Inte alls. Ungefärliga uppskattningar fungerar utmärkt — beskriv portioner naturligt som \"en stor skål pasta\" eller \"två skivor pizza\". Foton fungerar ännu bättre eftersom AI kan uppskatta portionsstorlekar visuellt.",
+    "q4": "Hur fungerar den gratis provperioden?",
+    "a4": "Du får full tillgång till alla funktioner under provperioden. Logga måltider, få sammanfattningar, ställ in påminnelser — allt. Inget kreditkort krävs för att starta.",
+    "q5": "Vilka språk stöds?",
+    "a5": "caltext upptäcker ditt språk från ditt telefonnummer och svarar därefter. Engelska och svenska stöds fullt ut, med fler språk på väg."
+  },
+  "BottomCta": {
+    "heading": "Börja räkna kalorier idag",
+    "subtitle": "Öppna iMessage och skriv till caltext. Du räknar kalorier inom två minuter.",
+    "buttonHint": "Öppnar iMessage på din Mac eller iPhone",
+    "qrLabel": "Skanna med din telefon"
+  },
+  "PhoneMockup": {
+    "header": "caltext",
+    "inputPlaceholder": "iMessage",
+    "lockTitle": "caltext",
+    "lockBody": "Lunch loggad. 470 kcal lades till idag.",
+    "lockBodyLogging": "Jag fick bilden. Låt mig uppskatta den.",
+    "lockBodySummary": "📊 Här kommer dagens summering.",
+    "lockBodyReminder": {
+      "breakfast": "☀️ Frukostdags! Fota maten så fixar jag resten.",
+      "lunch": "🥗 Lunchdags! Fota maten så fixar jag resten.",
+      "dinner": "🍽️ Middagsdags! Fota maten så fixar jag resten."
+    },
+    "msg1": "Åt en kycklingsallad med avokado till lunch 🥗",
+    "msg2": "Bra lunch! 🥗🥑\n\n🍗 Grillad kyckling — 285 kcal\n🥑 Avokado — 160 kcal\n🥬 Blandad sallad — 25 kcal\n\nTotalt: 470 kcal\nIdag: 1 240 / 2 100 kcal\n\n860 kvar — du ligger bra till! 🔥",
+    "msg3": "Vad är min streak?",
+    "msg4": "12 dagar i rad! 🔥🔥🔥\nDitt längsta någonsin. Fortsätt så!"
+  },
+  "Privacy": {
+    "heading": "Integritetspolicy",
+    "lastUpdated": "Senast uppdaterad: april 2026",
+    "intro": "Cal Text (\"Caltext\", \"vi\", \"oss\") är engagerade i att skydda din integritet. Denna policy förklarar vilken data vi samlar in, hur vi använder den och dina rättigheter.",
+    "dataCollection": {
+      "title": "Data vi samlar in",
+      "body": "När du använder Caltext samlar vi in:\n\n• Ditt telefonnummer (för att identifiera ditt konto och leverera meddelanden via iMessage)\n• Ditt namn, ålder, längd och vikt (för att beräkna ditt personliga kalorimål)\n• Kön, om du väljer att dela det — används endast för standardformeln för kalorier; om du hoppar över det använder vi en neutral uppskattning\n• Måltidsbeskrivningar och bilder du skickar till oss\n• Närings- och kaloridata som härleds från dina måltider\n• Din tidszon och land (detekteras från ditt telefonnummer för lokalisering)"
+    },
+    "dataUsage": {
+      "title": "Hur vi använder din data",
+      "body": "Vi använder din data för att:\n\n• Tillhandahålla personlig kalori- och makrospårning\n• Generera dagliga sammanfattningar, veckorapporter och måltidspåminnelser\n• Förbättra noggrannheten i vår matidentifiering och näringsuppskattningar\n• Kommunicera med dig via iMessage"
+    },
+    "dataStorage": {
+      "title": "Datalagring och säkerhet",
+      "body": "Anslutningar till vår webbplats och våra tjänster använder TLS (HTTPS). Ditt telefonnummer krypteras vid lagring med AES. Meddelandehistorik, innehåll i måltidsloggar, onboardingdata under uppsättning och liknande lagras som krypterade applikationslager-blobbar. Dina profilfält (t.ex. namn och kalorimål) lagras i vår databas med strikt åtkomstkontroll. All data lagras på säkra, åtkomstkontrollerade servrar. Vi använder branschstandardiserade säkerhetsåtgärder för att skydda din information."
+    },
+    "thirdParty": {
+      "title": "Tredjepartstjänster",
+      "body": "Vi använder följande tredjepartstjänster för att driva Caltext:\n\n• OpenAI — för matidentifiering och naturlig språkbehandling\n• USDA FoodData Central — för näringsdatasökning\n• Sendblue — för iMessage-leverans\n\nDessa tjänster behandlar data som är nödvändig för att tillhandahålla våra funktioner. Vi säljer inte din data till tredje part."
+    },
+    "retention": {
+      "title": "Datalagring",
+      "body": "Vi behåller dina måltidsloggar och profildata så länge ditt konto är aktivt. Du kan begära radering av din data när som helst genom att kontakta oss."
+    },
+    "rights": {
+      "title": "Dina rättigheter",
+      "body": "Du har rätt att:\n\n• Begära en kopia av din data\n• Begära rättelse av felaktig data\n• Begära radering av din data\n• Återkalla samtycke när som helst genom att sluta använda tjänsten"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Om du har frågor om denna integritetspolicy, kontakta oss på privacy@caltext.ai."
+    }
+  },
+  "Terms": {
+    "heading": "Användarvillkor",
+    "lastUpdated": "Senast uppdaterad: april 2026",
+    "intro": "Genom att använda Cal Text (\"Caltext\", \"Tjänsten\") godkänner du dessa villkor. Läs dem noggrant.",
+    "eligibility": {
+      "title": "Behörighet",
+      "body": "Du måste vara minst 16 år gammal och ha tillgång till en iPhone med iMessage för att använda Caltext."
+    },
+    "service": {
+      "title": "Tjänsten",
+      "body": "Caltext är en AI-driven kalori- och näringsspårningsassistent som fungerar via iMessage. Tjänsten inkluderar måltidsloggning, dagliga sammanfattningar, veckorapporter, streak-spårning och måltidspåminnelser."
+    },
+    "accuracy": {
+      "title": "Näringsnoggrannhet",
+      "body": "Caltext ger uppskattningar av kalorier och makronäringsämnen baserat på AI-analys och USDA FoodData Central-databasen. Dessa är uppskattningar och bör inte betraktas som exakta mätningar. Caltext är inte en medicinsk enhet och ger inte medicinsk eller dietrådgivning. Konsultera en vårdpersonal för specifika kostbehov."
+    },
+    "account": {
+      "title": "Ditt konto",
+      "body": "Ditt konto identifieras av ditt telefonnummer. Du ansvarar för all aktivitet kopplad till ditt telefonnummer. Dela inte åtkomst till ditt iMessage-konto med andra i syfte att använda Caltext."
+    },
+    "ip": {
+      "title": "Immaterialrätt",
+      "body": "Allt innehåll, alla funktioner och all funktionalitet i Caltext ägs av Caltext och skyddas av upphovsrätt och andra immaterialrättsliga lagar."
+    },
+    "liability": {
+      "title": "Ansvarsbegränsning",
+      "body": "Caltext tillhandahålls \"i befintligt skick\" utan garantier av något slag. Vi ansvarar inte för skador som uppstår genom din användning av tjänsten, inklusive men inte begränsat till hälsoresultat baserade på näringsuppskattningar från tjänsten."
+    },
+    "changes": {
+      "title": "Ändringar av villkor",
+      "body": "Vi kan uppdatera dessa villkor från tid till annan. Fortsatt användning av Caltext efter ändringar innebär att du godkänner de nya villkoren."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "body": "Om du har frågor om dessa villkor, kontakta oss på support@caltext.ai."
+    }
+  },
+  "Footer": {
+    "logo": "caltext",
+    "tagline": "Kalorirakning som lever i dina meddelanden.",
+    "privacy": "Integritet",
+    "terms": "Villkor",
+    "copyright": "© {year} caltext",
+    "x": "X",
+    "instagram": "Instagram",
+    "tiktok": "TikTok"
+  }
+}
