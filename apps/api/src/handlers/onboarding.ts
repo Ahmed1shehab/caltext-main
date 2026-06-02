@@ -1,5 +1,4 @@
-import { openai } from "@ai-sdk/openai";
-import { processOnboardingMessage } from "@caltext/ai";
+import { chatModel, processOnboardingMessage } from "@caltext/ai";
 import {
   createUser,
   deleteOnboardingState,
@@ -35,7 +34,7 @@ export async function handleOnboarding(
   }
 
   const ai = createAILogger(log);
-  const model = ai.wrap(openai("gpt-4.1-mini"));
+  const model = ai.wrap(chatModel());
 
   log.set({ onboarding: { isFirstMessage, stateFields: Object.keys(state).length } });
 

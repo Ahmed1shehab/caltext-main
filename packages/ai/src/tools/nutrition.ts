@@ -1,6 +1,7 @@
-import { openai } from "@ai-sdk/openai";
 import type { NutritionInfo } from "@caltext/shared";
-import { generateText, Output, tool } from "ai";
+import { tool } from "ai";
+import { chatModel } from "../model";
+import { generateStructured } from "../structured";
 import { log } from "evlog";
 import { z } from "zod";
 
@@ -26,13 +27,14 @@ export const lookupNutrition = tool({
   execute: async ({ foodName, grams, preparationMethod }): Promise<NutritionInfo> => {
     const desc = preparationMethod ? `${foodName}, ${preparationMethod}` : foodName;
 
-    const { output } = await generateText({
-      model: openai("gpt-4.1-mini"),
-      output: Output.object({ schema: estimateSchema }),
-      prompt: `Estimate nutrition for ${grams}g of ${desc}. Use your knowledge of typical nutritional values. Return kcal, protein, carbs, fat, fiber in grams. Be accurate -- these are for calorie tracking.`,
-    });
-
-    if (!output) {
+    let output: z.infer<typeof estimateSchema>;
+    try {
+      output = await generateStructured({
+        model: chatModel(),
+        schema: estimateSchema,
+        prompt: `Estimate nutrition for ${grams}g of ${desc}. Use your knowledge of typical nutritional values. Return kcal, protein, carbs, fat, fiber in grams. Be accurate -- these are for calorie tracking.`,
+      });
+    } catch {
       return { matchedName: foodName, calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 };
     }
 

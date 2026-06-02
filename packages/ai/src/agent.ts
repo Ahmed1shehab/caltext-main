@@ -1,5 +1,5 @@
-import { openai } from "@ai-sdk/openai";
 import type { LanguageModelV3 } from "@ai-sdk/provider";
+import { chatModel } from "./model";
 import { type ModelMessage, stepCountIs, type Tool, ToolLoopAgent } from "ai";
 import { deleteAccountTool } from "./tools/delete-account";
 import { deleteMealTool } from "./tools/delete-meal";
@@ -37,7 +37,7 @@ export interface AgentOptions extends AgentSecurityContext {
 }
 
 export function createCaltextAgent(systemPrompt: string, ctx: AgentOptions) {
-  const model = ctx.model ?? openai(ctx.hasImage ? "gpt-4.1" : "gpt-4.1-mini");
+  const model = ctx.model ?? chatModel(ctx.hasImage);
 
   return new ToolLoopAgent({
     model,

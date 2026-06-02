@@ -1,5 +1,6 @@
-import { openai } from "@ai-sdk/openai";
-import { generateObject, tool } from "ai";
+import { tool } from "ai";
+import { chatModel } from "../model";
+import { ciEnum, generateStructured } from "../structured";
 import { log } from "evlog";
 import { z } from "zod";
 
@@ -22,10 +23,10 @@ export const foodIdentificationSchema = z.object({
       preparationMethod: z
         .string()
         .describe("How it appears prepared: raw, grilled, fried, boiled, etc."),
-      confidence: z.enum(["high", "medium", "low"]),
+      confidence: ciEnum(["high", "medium", "low"]),
       notes: z
         .string()
-        .nullable()
+        .nullish()
         .describe("Anything uncertain, e.g. 'could be diet or regular'. Null if nothing to note."),
       nutrition: z
         .object({
@@ -40,10 +41,10 @@ export const foodIdentificationSchema = z.object({
   ),
   sceneContext: z
     .string()
-    .nullable()
+    .nullish()
     .describe("Visible reference objects: plate size, utensils, hands. Null if none."),
   nutritionLabel: nutritionLabelSchema
-    .nullable()
+    .nullish()
     .describe(
       "Present only when a nutrition facts label is visible on a packaged product. Do NOT populate items when this is set. Null for plates of food.",
     ),
@@ -102,9 +103,12 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
           dataUrl = `data:${contentType};base64,${base64}`;
         }
 
-        const result = await generateObject({
-          model: openai("gpt-4.1-mini"),
+        const obj = await generateStructured({
+          model: chatModel(true),
           schema: foodIdentificationSchema,
+          // A real plate has a handful of items; cap output so a degenerate
+          // model can't run away generating hundreds of repeated lines.
+          maxOutputTokens: 1500,
           messages: [
             {
               role: "user",
@@ -116,7 +120,6 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
           ],
         });
 
-        const obj = result.object;
         log.info({
           tool: "identifyFood",
           itemCount: obj.items.length,

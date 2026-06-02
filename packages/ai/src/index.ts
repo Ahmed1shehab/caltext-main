@@ -1,4 +1,5 @@
 export { type AgentSecurityContext, createCaltextAgent, type ModelMessage } from "./agent";
+export { chatModel } from "./model";
 export {
   type OnboardingContext,
   type OnboardingResult,
