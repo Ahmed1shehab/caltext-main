@@ -24,10 +24,14 @@ export const env = createEnv({
     OPENROUTER_BASE_URL: z.string().url().optional(),
     OPENROUTER_TEXT_MODEL: z.string().optional(),
     OPENROUTER_VISION_MODEL: z.string().optional(),
-    // Groq (free, fast, email signup). Llama 4 Scout is multimodal text+vision.
+    // Groq (free, fast, email signup). Split models: llama-3.3-70b-versatile
+    // for tools/text, llama-4-scout for vision. GROQ_MODEL is a legacy alias
+    // for the text model.
     GROQ_API_KEY: z.string().trim().optional(),
     GROQ_BASE_URL: z.string().url().optional(),
     GROQ_MODEL: z.string().optional(),
+    GROQ_TEXT_MODEL: z.string().optional(),
+    GROQ_VISION_MODEL: z.string().optional(),
     // Zhipu GLM (free, OpenAI-compatible). glm-4-flash text / glm-4v-flash vision.
     ZHIPU_API_KEY: z.string().trim().optional(),
     ZHIPU_BASE_URL: z.string().url().optional(),

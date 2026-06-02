@@ -114,9 +114,16 @@ function buildModels(name: ProviderName): Models {
         apiKey: env.GROQ_API_KEY,
         baseURL: env.GROQ_BASE_URL ?? "https://api.groq.com/openai/v1",
       });
-      // Llama 4 Scout is multimodal: one model handles text, tools, and vision.
-      const model = groq(env.GROQ_MODEL ?? "meta-llama/llama-4-scout-17b-16e-instruct");
-      return { text: model, vision: model };
+      // Split models: llama-3.3-70b-versatile is Groq's most reliable tool
+      // caller (the agent loop + structured output), while llama-4-scout is
+      // multimodal for reading photos. Llama-4-scout's tool calling is flaky on
+      // complex schemas (Groq rejects malformed calls with `tool_use_failed`),
+      // so it is NOT used for the text/tool path. GROQ_MODEL stays as a legacy
+      // override for the text model.
+      return {
+        text: groq(env.GROQ_TEXT_MODEL ?? env.GROQ_MODEL ?? "llama-3.3-70b-versatile"),
+        vision: groq(env.GROQ_VISION_MODEL ?? "meta-llama/llama-4-scout-17b-16e-instruct"),
+      };
     }
     case "gemini": {
       if (!env.GEMINI_API_KEY) {
