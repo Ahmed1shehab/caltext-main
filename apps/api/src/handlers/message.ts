@@ -25,6 +25,23 @@ function buildUserMessage(text: string, hasImage?: boolean): ModelMessage {
   return { role: "user", content: text };
 }
 
+// Cap how many prior messages we actually send to the model each turn. The full
+// history (up to MAX_CONVERSATION_MESSAGES = 40) is still persisted for context,
+// but re-sending all 40 on every call multiplied by the agent's 3-step tool loop
+// blows small per-minute token budgets (e.g. Groq's free tier = 12k TPM), which
+// surfaces to the user as "Oops". A sliding window keeps recent context cheap.
+const MAX_HISTORY_MESSAGES = 14;
+
+function windowHistory(messages: ModelMessage[]): ModelMessage[] {
+  if (messages.length <= MAX_HISTORY_MESSAGES) return messages;
+  const window = messages.slice(-MAX_HISTORY_MESSAGES);
+  // Never start the window on an assistant/tool message: a leading tool result
+  // with no preceding tool call is an orphan that some providers reject. Begin
+  // at the first user turn inside the window.
+  const firstUser = window.findIndex((m) => m.role === "user");
+  return firstUser > 0 ? window.slice(firstUser) : window;
+}
+
 function stripImagesFromHistory(messages: ModelMessage[]): ModelMessage[] {
   return messages.map((msg) => {
     if (msg.role !== "user" || typeof msg.content === "string") return msg;
@@ -101,7 +118,8 @@ export async function handleMessage(
     model,
   });
 
-  const allMessages: ModelMessage[] = [...conversationHistory, userMessage];
+  // Window only what we send to the model; full history is still saved below.
+  const allMessages: ModelMessage[] = [...windowHistory(conversationHistory), userMessage];
   const messages = pruneMessages({
     messages: allMessages,
     toolCalls: "before-last-2-messages",
