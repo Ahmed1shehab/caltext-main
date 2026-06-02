@@ -2,6 +2,40 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 import { env } from "@caltext/shared";
+import { wrapLanguageModel } from "ai";
+
+// Some models (notably Groq's llama-3.3-70b) intermittently emit a malformed
+// tool call — e.g. the arguments get jammed into the function name — which the
+// provider hard-rejects with a 400 ("tool_use_failed" / "tool call validation
+// failed"). That kills the whole turn and surfaces as "Oops" to the user. Since
+// the failure is intermittent, simply re-running the same generation almost
+// always succeeds, so we wrap the tool-calling (text) model with a middleware
+// that retries on exactly that error.
+function isMalformedToolCall(err: unknown): boolean {
+  const msg = String((err as { message?: unknown })?.message ?? err);
+  return /tool_use_failed|tool call validation failed|not in request\.tools/i.test(msg);
+}
+
+function withToolCallRetry(model: LanguageModelV3, attempts = 2): LanguageModelV3 {
+  return wrapLanguageModel({
+    model,
+    middleware: {
+      specificationVersion: "v3",
+      wrapGenerate: async ({ doGenerate }) => {
+        let lastErr: unknown;
+        for (let i = 0; i <= attempts; i++) {
+          try {
+            return await doGenerate();
+          } catch (err) {
+            lastErr = err;
+            if (!isMalformedToolCall(err)) throw err;
+          }
+        }
+        throw lastErr;
+      },
+    },
+  });
+}
 
 // The whole app routes every model call through chatModel(hasImage). Swap the
 // underlying provider with the AI_PROVIDER env var (or just set one provider's
@@ -171,7 +205,10 @@ function buildModels(name: ProviderName): Models {
 
 export const PROVIDER = resolveProviderName();
 const models = buildModels(PROVIDER);
+// Only the text model does tool calling, so only it needs the malformed-tool-
+// call retry. The vision model is used for plain structured output.
+const textModel = withToolCallRetry(models.text);
 
 export function chatModel(hasImage = false): LanguageModelV3 {
-  return hasImage ? models.vision : models.text;
+  return hasImage ? models.vision : textModel;
 }
