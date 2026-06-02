@@ -24,6 +24,11 @@ interface StructuredBase<T> {
   // repetition (e.g. the same food line over and over); capping tokens bounds
   // the damage and forces the call to return.
   maxOutputTokens?: number;
+  // Provider-specific options, namespaced by provider (e.g. `{ google: {...} }`).
+  // Providers ignore namespaces that aren't theirs, so it's safe to pass options
+  // for a provider that may or may not be the active one (used to disable Gemini
+  // 2.5 Flash's "thinking" so the full output budget goes to the structured JSON).
+  providerOptions?: Parameters<typeof generateObject>[0]["providerOptions"];
 }
 
 type StructuredArgs<T> = StructuredBase<T> &
@@ -43,6 +48,7 @@ export async function generateStructured<T>(args: StructuredArgs<T>): Promise<T>
     system,
     maxRetries: args.maxRetries ?? 2,
     ...(args.maxOutputTokens ? { maxOutputTokens: args.maxOutputTokens } : {}),
+    ...(args.providerOptions ? { providerOptions: args.providerOptions } : {}),
   };
 
   const { object } =

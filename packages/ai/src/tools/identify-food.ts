@@ -109,6 +109,12 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
           // A real plate has a handful of items; cap output so a degenerate
           // model can't run away generating hundreds of repeated lines.
           maxOutputTokens: 1500,
+          // Gemini 2.5 Flash is a thinking model: by default it spends hundreds
+          // of tokens "thinking" before answering, which eats into the output
+          // budget above (risking truncated JSON) and burns its scarce free
+          // quota. Disable it so the whole budget goes to the structured result.
+          // Ignored by non-Google providers (Groq/OpenRouter vision fallbacks).
+          providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
           messages: [
             {
               role: "user",

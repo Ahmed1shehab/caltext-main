@@ -21,6 +21,7 @@
         "ZHIPU_TEXT_MODEL",
         "ZHIPU_VISION_MODEL",
         "GEMINI_API_KEY",
+        "GEMINI_API_KEY_2",
         "GEMINI_MODEL",
         "NVIDIA_API_KEY",
         "NVIDIA_BASE_URL",

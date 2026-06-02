@@ -46,7 +46,7 @@ function withToolCallRetry(model: LanguageModelV3, attempts = 2): LanguageModelV
 // absorbs the rare per-minute spillover (and vice-versa).
 function isRateLimited(err: unknown): boolean {
   const msg = String((err as { message?: unknown })?.message ?? err);
-  return /rate[\s_-]?limit|free-models-per-day|too many requests|\b429\b|tokens per minute|\bTPM\b|quota/i.test(
+  return /rate[\s_-]?limit|free-models-per-day|too many requests|\b429\b|tokens per minute|\bTPM\b|quota|resource[\s_-]?exhausted/i.test(
     msg,
   );
 }
@@ -226,8 +226,13 @@ function buildModels(name: ProviderName): Models {
       }
       const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY });
       // Gemini Flash is multimodal: one model handles text, tool calling, and
-      // vision. gemini-2.0-flash has the most generous free tier (~15 RPM).
-      const model = google(env.GEMINI_MODEL ?? "gemini-2.0-flash");
+      // vision. NOTE: for this project's account (Egypt region) gemini-2.0-flash
+      // is provisioned at limit:0, but gemini-2.5-flash has a small free tier
+      // (~20 requests/DAY). That daily cap is far too small to run the whole
+      // agent on, so Gemini is used ONLY as the vision model (1 call per photo);
+      // text/tools stay on Groq. 2.5 Flash is a thinking model — callers disable
+      // thinking (thinkingBudget:0) to protect the output budget and quota.
+      const model = google(env.GEMINI_MODEL ?? "gemini-2.5-flash");
       return { text: model, vision: model };
     }
     case "nvidia": {
@@ -296,6 +301,51 @@ function buildFallbackModels(primary: ProviderName): Models | null {
   return null;
 }
 
+// Folds an ordered list of models into a rate-limit fallback chain: the first is
+// primary, each subsequent one catches the previous's rate-limit error.
+function chainFallback(models: LanguageModelV3[]): LanguageModelV3 {
+  let chain = models[models.length - 1]!;
+  for (let i = models.length - 2; i >= 0; i--) chain = withRateLimitFallback(models[i]!, chain);
+  return chain;
+}
+
+// Vision is decoupled from the text provider. Gemini 2.5 Flash has by far the
+// best food-photo quality but only ~20 requests/DAY free, so it leads the chain
+// (1 call per photo) and Groq's llama-4-scout / OpenRouter absorb the overflow
+// once Gemini's daily quota is spent. Every model is reasoning-stripped via base().
+const VISION_ORDER: ProviderName[] = ["gemini", "groq", "openrouter", "nvidia", "zhipu"];
+
+// Gemini 2.5 Flash is vision-only here (~20 req/DAY free). Multiple keys multiply
+// that quota: build one vision model per configured key so the fallback chain
+// switches to the next key when one hits its daily limit (a rate-limit error
+// `isRateLimited` matches), before finally falling through to Groq/OpenRouter.
+function geminiVisionModels(): LanguageModelV3[] {
+  const keys = [env.GEMINI_API_KEY, env.GEMINI_API_KEY_2].filter(
+    (k): k is string => !!k,
+  );
+  return keys.map((apiKey) =>
+    base(createGoogleGenerativeAI({ apiKey })(env.GEMINI_MODEL ?? "gemini-2.5-flash")),
+  );
+}
+
+function buildVisionModel(primaryVision: LanguageModelV3): LanguageModelV3 {
+  const built: LanguageModelV3[] = [];
+  for (const name of VISION_ORDER) {
+    if (name === "gemini") {
+      // Expands to one model per Gemini key (or nothing if no key is set).
+      built.push(...geminiVisionModels());
+      continue;
+    }
+    if (!hasKey(name)) continue;
+    try {
+      built.push(base(buildModels(name).vision));
+    } catch {
+      // Misconfigured provider — skip rather than break the vision chain.
+    }
+  }
+  return built.length > 0 ? chainFallback(built) : base(primaryVision);
+}
+
 export const PROVIDER = resolveProviderName();
 const primaryModels = buildModels(PROVIDER);
 const fallbackModels = buildFallbackModels(PROVIDER);
@@ -307,10 +357,7 @@ const fallbackModels = buildFallbackModels(PROVIDER);
 const textModel = withToolCallRetry(
   withRateLimitFallback(base(primaryModels.text), fallbackModels ? base(fallbackModels.text) : null),
 );
-const visionModel = withRateLimitFallback(
-  base(primaryModels.vision),
-  fallbackModels ? base(fallbackModels.vision) : null,
-);
+const visionModel = buildVisionModel(primaryModels.vision);
 
 export function chatModel(hasImage = false): LanguageModelV3 {
   return hasImage ? visionModel : textModel;

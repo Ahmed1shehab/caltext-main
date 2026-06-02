@@ -37,8 +37,12 @@ export const env = createEnv({
     ZHIPU_BASE_URL: z.string().url().optional(),
     ZHIPU_TEXT_MODEL: z.string().optional(),
     ZHIPU_VISION_MODEL: z.string().optional(),
-    // Google Gemini (free tier). One multimodal model handles text+tools+vision.
+    // Google Gemini (free tier). Used ONLY for vision (best food-photo quality)
+    // since 2.5 Flash's free tier is ~20 requests/DAY. A second key doubles that
+    // quota: vision uses GEMINI_API_KEY first, then auto-switches to
+    // GEMINI_API_KEY_2 when the first hits its daily limit.
     GEMINI_API_KEY: z.string().trim().optional(),
+    GEMINI_API_KEY_2: z.string().trim().optional(),
     GEMINI_MODEL: z.string().optional(),
     // NVIDIA NIM (free, OpenAI-compatible) at integrate.api.nvidia.com.
     NVIDIA_API_KEY: z.string().trim().optional(),
