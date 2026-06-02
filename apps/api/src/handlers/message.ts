@@ -106,7 +106,14 @@ export async function handleMessage(
   };
 
   const ai = createAILogger(log, { toolInputs: { maxLength: 200 } });
-  const model = ai.wrap(chatModel(hasImage));
+  // The agent ONLY orchestrates tool calls — it never sees the photo itself
+  // (buildUserMessage replaces an image with a text placeholder, and the actual
+  // image read happens inside the identifyFood tool via chatModel(true)). So the
+  // agent must always run on the text model, which is good at tool calling.
+  // Running it on the vision model (e.g. Groq llama-4-scout) made it emit broken
+  // tool calls as plain text — '{"type":"function","name":"identifyFood"}' — to
+  // the user instead of executing them.
+  const model = ai.wrap(chatModel(false));
 
   const systemPrompt = buildSystemPrompt(ctx);
   const userMessage = buildUserMessage(text, hasImage);
