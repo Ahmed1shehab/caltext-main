@@ -1,5 +1,9 @@
-import { openai } from "@ai-sdk/openai";
-import { buildDailySummaryPrompt, buildReminderPrompt, buildWeeklyRecapPrompt } from "@caltext/ai";
+import {
+  buildDailySummaryPrompt,
+  buildReminderPrompt,
+  buildWeeklyRecapPrompt,
+  chatModel,
+} from "@caltext/ai";
 import {
   getCustomReminderTimes,
   getDailyLog,
@@ -56,7 +60,7 @@ export async function generateReminder(
       : "No active streak (0 days) — do not mention streaks.";
 
   const result = await generateText({
-    model: openai("gpt-4.1-mini"),
+    model: chatModel(),
     system: buildReminderPrompt(locale),
     prompt: `Generate a ${mealLabel} reminder.
 Meal emoji to lead with: ${mealEmoji}
@@ -92,7 +96,7 @@ export async function generateDailySummary(
     .join("\n");
 
   const result = await generateText({
-    model: openai("gpt-4.1-mini"),
+    model: chatModel(),
     system: buildDailySummaryPrompt(locale),
     prompt: `Generate daily summary for ${user.name}.
 Target: ${user.dailyCalorieTarget} kcal
@@ -136,7 +140,7 @@ export async function generateWeeklyRecap(userId: string, locale: string): Promi
   ).length;
 
   const result = await generateText({
-    model: openai("gpt-4.1-mini"),
+    model: chatModel(),
     system: buildWeeklyRecapPrompt(locale),
     prompt: `Generate weekly recap for ${user.name}.
 Target: ${user.dailyCalorieTarget} kcal/day

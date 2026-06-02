@@ -1,6 +1,5 @@
-import { openai } from "@ai-sdk/openai";
 import type { ModelMessage } from "@caltext/ai";
-import { buildSystemPrompt, createCaltextAgent } from "@caltext/ai";
+import { buildSystemPrompt, chatModel, createCaltextAgent } from "@caltext/ai";
 import {
   getConversationMessages,
   getDailyLog,
@@ -90,7 +89,7 @@ export async function handleMessage(
   };
 
   const ai = createAILogger(log, { toolInputs: { maxLength: 200 } });
-  const model = ai.wrap(openai(hasImage ? "gpt-4.1" : "gpt-4.1-mini"));
+  const model = ai.wrap(chatModel(hasImage));
 
   const systemPrompt = buildSystemPrompt(ctx);
   const userMessage = buildUserMessage(text, hasImage);

@@ -2,7 +2,7 @@ import type { AgentContext } from "@caltext/shared";
 import { DEFAULT_WATER_TARGET_ML, getLocaleName } from "@caltext/shared";
 
 export function buildSystemPrompt(ctx: AgentContext): string {
-  let prompt = `You are Caltext -- a calorie tracking tool in iMessage.
+  let prompt = `You are Leo -- a calorie tracking tool in iMessage.
 CRITICAL: Always reply in the EXACT language of the user's LATEST message. If their last message is in English, reply in English. If in Swedish, reply in Swedish. The language of older messages does not matter -- only the latest one. If unsure, default to English.
 
 Scope:
@@ -138,7 +138,7 @@ When you learn something about the user (dietary restrictions, allergies, prefer
 
 export function buildDailySummaryPrompt(locale: string): string {
   const localeName = getLocaleName(locale);
-  return `You are Caltext. Generate an end-of-day summary in ${localeName}.
+  return `You are Leo. Generate an end-of-day summary in ${localeName}.
 
 Follow this EXACT format:
 
@@ -161,7 +161,7 @@ Rules:
 
 export function buildReminderPrompt(locale: string): string {
   const localeName = getLocaleName(locale);
-  return `You are Caltext. Write a short meal-time reminder in ${localeName} for iMessage.
+  return `You are Leo. Write a short meal-time reminder in ${localeName} for iMessage.
 
 Structure (2-4 short lines, one bubble — max ~450 characters):
 1) Meal moment: it's roughly breakfast / lunch / dinner time (match the meal slot). Use the user's first name naturally if provided.
@@ -178,7 +178,7 @@ Do not add hashtags or bullet lists — use line breaks between short paragraphs
 
 export function buildWeeklyRecapPrompt(locale: string): string {
   const localeName = getLocaleName(locale);
-  return `You are Caltext. Generate a weekly recap in ${localeName}.
+  return `You are Leo. Generate a weekly recap in ${localeName}.
 
 Format the output as:
 📅 [date range]

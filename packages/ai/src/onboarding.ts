@@ -1,15 +1,14 @@
-import { openai } from "@ai-sdk/openai";
 import type { LanguageModelV3 } from "@ai-sdk/provider";
 import type { OnboardingState } from "@caltext/shared";
-import { generateText, Output } from "ai";
 import { z } from "zod";
+import { chatModel } from "./model";
+import { ciEnum, generateStructured } from "./structured";
 
-const defaultModel = openai("gpt-4.1-mini");
+const defaultModel = chatModel();
 
 const extractionSchema = z.object({
   name: z.string().nullable().describe("User's first name. Null if not mentioned."),
-  sex: z
-    .enum(["male", "female", "unspecified"])
+  sex: ciEnum(["male", "female", "unspecified"])
     .nullable()
     .describe(
       "male/female for Mifflin-St Jeor; unspecified if user skips, prefers not to say, or declines. Null if not mentioned.",
@@ -23,12 +22,10 @@ const extractionSchema = z.object({
     .number()
     .nullable()
     .describe("Weight converted to kg. 1lb=0.4536kg, 1stone=6.35kg. Null if not mentioned."),
-  goal: z
-    .enum(["lose", "maintain", "gain"])
+  goal: ciEnum(["lose", "maintain", "gain"])
     .nullable()
     .describe("Fitness goal. Null if not mentioned."),
-  activity: z
-    .enum(["sedentary", "light", "moderate", "active", "very_active"])
+  activity: ciEnum(["sedentary", "light", "moderate", "active", "very_active"])
     .nullable()
     .describe("Activity level. Null if not mentioned."),
   consented: z
@@ -98,7 +95,7 @@ export async function processOnboardingMessage(
   let situation: string;
 
   if (ctx.isFirstMessage) {
-    situation = `This is the user's FIRST message. Welcome them as Caltext, a calorie tracking buddy in iMessage.
+    situation = `This is the user's FIRST message. Welcome them as Leo, a calorie tracking buddy in iMessage.
 
 CONTENT (keep SHORT — about one phone screen, ~3-6 short sentences OR two bubbles max):
 - Lead with the payoff: they'll get a **personal daily calorie target** in about **~2 minutes**.
@@ -122,10 +119,12 @@ Still missing: ${describeMissing(state)}.
 In your reply: briefly acknowledge any new info they just provided, then ask only for what is still missing — **one or two asks at a time** if several fields are missing (do not dump the full checklist again). If only consent is missing, warmly ask for their OK to store health data (mention they can delete anytime). Keep it short and conversational.`;
   }
 
-  const { output } = await generateText({
-    model: model ?? defaultModel,
-    output: Output.object({ schema: extractionSchema }),
-    prompt: `You are Caltext, a friendly calorie tracking assistant in iMessage. ${replyLang}
+  let output: z.infer<typeof extractionSchema> | null = null;
+  try {
+    output = await generateStructured({
+      model: model ?? defaultModel,
+      schema: extractionSchema,
+      prompt: `You are Leo, a friendly calorie tracking assistant in iMessage. ${replyLang}
 ${conversationContext}
 USER MESSAGE: "${text}"
 
@@ -149,7 +148,10 @@ REPLY INSTRUCTIONS:
 - Be direct like a friend texting, not formal
 - Do NOT wrap the reply in quotes
 - NEVER re-ask for information the user already confirmed`,
-  });
+    });
+  } catch {
+    output = null;
+  }
 
   if (!output) {
     return { extracted: {}, reply: "Hey! Something went wrong -- try again? 🙏" };
