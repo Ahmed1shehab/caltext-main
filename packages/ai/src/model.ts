@@ -74,6 +74,30 @@ function withRateLimitFallback(
   });
 }
 
+// Reasoning models (e.g. OpenRouter's openai/gpt-oss, qwen) return their chain
+// of thought as a `reasoning` content part. When the cross-provider fallback
+// mixes such a model into a loop, that part is serialized as `reasoning_content`
+// on the NEXT request, and providers like Groq hard-reject it (400 "property
+// 'reasoning_content' is unsupported"), killing the turn. Strip reasoning parts
+// from the prompt before EVERY call so no provider chokes on another's chain of
+// thought — historical reasoning isn't needed to generate the next step.
+function base(model: LanguageModelV3): LanguageModelV3 {
+  return wrapLanguageModel({
+    model,
+    middleware: {
+      specificationVersion: "v3",
+      transformParams: async ({ params }) => {
+        const prompt = params.prompt.map((m) =>
+          m.role === "assistant" && Array.isArray(m.content)
+            ? { ...m, content: m.content.filter((p) => p.type !== "reasoning") }
+            : m,
+        );
+        return { ...params, prompt };
+      },
+    },
+  });
+}
+
 // The whole app routes every model call through chatModel(hasImage). Swap the
 // underlying provider with the AI_PROVIDER env var (or just set one provider's
 // API key and it auto-selects). Each provider exposes a text model (used for the
@@ -273,15 +297,20 @@ function buildFallbackModels(primary: ProviderName): Models | null {
 }
 
 export const PROVIDER = resolveProviderName();
-const models = buildModels(PROVIDER);
+const primaryModels = buildModels(PROVIDER);
 const fallbackModels = buildFallbackModels(PROVIDER);
 
-// Only the text model does tool calling, so only it needs the malformed-tool-
-// call retry. Both paths get cross-provider rate-limit fallback.
+// Wrap every underlying model with the reasoning-stripping base so that, even
+// when the fallback mixes providers mid-loop, no provider receives another's
+// reasoning_content. Only the text model does tool calling, so only it needs the
+// malformed-tool-call retry. Both paths get cross-provider rate-limit fallback.
 const textModel = withToolCallRetry(
-  withRateLimitFallback(models.text, fallbackModels?.text ?? null),
+  withRateLimitFallback(base(primaryModels.text), fallbackModels ? base(fallbackModels.text) : null),
 );
-const visionModel = withRateLimitFallback(models.vision, fallbackModels?.vision ?? null);
+const visionModel = withRateLimitFallback(
+  base(primaryModels.vision),
+  fallbackModels ? base(fallbackModels.vision) : null,
+);
 
 export function chatModel(hasImage = false): LanguageModelV3 {
   return hasImage ? visionModel : textModel;
