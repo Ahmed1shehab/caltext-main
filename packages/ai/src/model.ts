@@ -37,6 +37,43 @@ function withToolCallRetry(model: LanguageModelV3, attempts = 2): LanguageModelV
   });
 }
 
+// Every free provider has a wall: Groq caps tokens-per-minute (12k on the free
+// tier), OpenRouter caps requests-per-day (~50 free). When one wall is hit the
+// provider returns a rate-limit error and the turn dies as "Oops". To stay up,
+// we wrap the primary model so that on a rate-limit error it transparently
+// re-runs the SAME request against a fallback provider. Combined, the two free
+// tiers cover each other: Groq's big daily budget is the workhorse, OpenRouter
+// absorbs the rare per-minute spillover (and vice-versa).
+function isRateLimited(err: unknown): boolean {
+  const msg = String((err as { message?: unknown })?.message ?? err);
+  return /rate[\s_-]?limit|free-models-per-day|too many requests|\b429\b|tokens per minute|\bTPM\b|quota/i.test(
+    msg,
+  );
+}
+
+function withRateLimitFallback(
+  primary: LanguageModelV3,
+  fallback: LanguageModelV3 | null,
+): LanguageModelV3 {
+  if (!fallback) return primary;
+  return wrapLanguageModel({
+    model: primary,
+    middleware: {
+      specificationVersion: "v3",
+      wrapGenerate: async ({ doGenerate, params }) => {
+        try {
+          return await doGenerate();
+        } catch (err) {
+          if (!isRateLimited(err)) throw err;
+          // Primary provider is throttled — retry the identical request on the
+          // fallback provider. doGenerate already exhausted the SDK's backoff.
+          return await fallback.doGenerate(params);
+        }
+      },
+    },
+  });
+}
+
 // The whole app routes every model call through chatModel(hasImage). Swap the
 // underlying provider with the AI_PROVIDER env var (or just set one provider's
 // API key and it auto-selects). Each provider exposes a text model (used for the
@@ -203,12 +240,49 @@ function buildModels(name: ProviderName): Models {
   }
 }
 
+// Does this provider have an API key configured? Used to pick a viable fallback.
+function hasKey(name: ProviderName): boolean {
+  switch (name) {
+    case "openrouter":
+      return !!env.OPENROUTER_API_KEY;
+    case "groq":
+      return !!env.GROQ_API_KEY;
+    case "gemini":
+      return !!env.GEMINI_API_KEY;
+    case "nvidia":
+      return !!env.NVIDIA_API_KEY;
+    case "zhipu":
+      return !!env.ZHIPU_API_KEY;
+  }
+}
+
+// When the primary provider is rate-limited, fall over to the first of these
+// (other than the primary) whose key is set. Order = preferred fallbacks.
+const FALLBACK_ORDER: ProviderName[] = ["groq", "openrouter", "gemini", "nvidia", "zhipu"];
+
+function buildFallbackModels(primary: ProviderName): Models | null {
+  for (const name of FALLBACK_ORDER) {
+    if (name === primary || !hasKey(name)) continue;
+    try {
+      return buildModels(name);
+    } catch {
+      // Misconfigured fallback — skip it rather than break the primary path.
+    }
+  }
+  return null;
+}
+
 export const PROVIDER = resolveProviderName();
 const models = buildModels(PROVIDER);
+const fallbackModels = buildFallbackModels(PROVIDER);
+
 // Only the text model does tool calling, so only it needs the malformed-tool-
-// call retry. The vision model is used for plain structured output.
-const textModel = withToolCallRetry(models.text);
+// call retry. Both paths get cross-provider rate-limit fallback.
+const textModel = withToolCallRetry(
+  withRateLimitFallback(models.text, fallbackModels?.text ?? null),
+);
+const visionModel = withRateLimitFallback(models.vision, fallbackModels?.vision ?? null);
 
 export function chatModel(hasImage = false): LanguageModelV3 {
-  return hasImage ? models.vision : textModel;
+  return hasImage ? visionModel : textModel;
 }
