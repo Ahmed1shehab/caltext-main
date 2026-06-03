@@ -302,22 +302,6 @@ function hasKey(name: ProviderName): boolean {
   }
 }
 
-// When the primary provider is rate-limited, fall over to the first of these
-// (other than the primary) whose key is set. Order = preferred fallbacks.
-const FALLBACK_ORDER: ProviderName[] = ["groq", "openrouter", "gemini", "nvidia", "zhipu"];
-
-function buildFallbackModels(primary: ProviderName): Models | null {
-  for (const name of FALLBACK_ORDER) {
-    if (name === primary || !hasKey(name)) continue;
-    try {
-      return buildModels(name);
-    } catch {
-      // Misconfigured fallback — skip it rather than break the primary path.
-    }
-  }
-  return null;
-}
-
 // Folds an ordered list of models into a rate-limit fallback chain: the first is
 // primary, each subsequent one catches the previous's rate-limit error.
 function chainFallback(models: LanguageModelV3[]): LanguageModelV3 {
@@ -326,61 +310,82 @@ function chainFallback(models: LanguageModelV3[]): LanguageModelV3 {
   return chain;
 }
 
-// Vision is decoupled from the text provider. Gemini 2.5 Flash has by far the
-// best food-photo quality but only ~20 requests/DAY free, so it leads the chain
-// (1 call per photo) and Groq's llama-4-scout / OpenRouter absorb the overflow
-// once Gemini's daily quota is spent. Every model is reasoning-stripped via base().
+// Gemini 2.5 Flash leads BOTH chains for best quality, then Groq, then the rest.
+// NOTE the trade-off: Gemini's free quota (~20 req/DAY/key, ~40 total across two
+// keys) is SHARED between text and vision. The text agent loop spends 3-5 Gemini
+// requests per message, so it drains the daily budget in ~8-10 messages — after
+// which both text and photos fall through to Groq. (Per the user's explicit
+// choice to make Gemini primary for both; revert TEXT_ORDER to lead with "groq"
+// to instead reserve Gemini's quota for photos.)
+const TEXT_ORDER: ProviderName[] = ["gemini", "groq", "openrouter", "nvidia", "zhipu"];
 const VISION_ORDER: ProviderName[] = ["gemini", "groq", "openrouter", "nvidia", "zhipu"];
 
-// Gemini 2.5 Flash is vision-only here (~20 req/DAY free). Multiple keys multiply
-// that quota: build one vision model per configured key so the fallback chain
-// switches to the next key when one hits its daily limit (a rate-limit error
-// `isRateLimited` matches), before finally falling through to Groq/OpenRouter.
-function geminiVisionModels(): LanguageModelV3[] {
+// Gemini 2.5 Flash is multimodal (text+tools+vision) but has a tiny free tier
+// (~20 req/DAY per key). Multiple keys multiply that quota: build one model per
+// configured key so the fallback chain switches to the next key when one hits
+// its daily limit, before finally falling through to Groq/OpenRouter.
+function geminiModels(): LanguageModelV3[] {
   const keys = [env.GEMINI_API_KEY, env.GEMINI_API_KEY_2].filter(
     (k): k is string => !!k,
   );
-  return keys.map((apiKey) =>
-    base(createGoogleGenerativeAI({ apiKey })(env.GEMINI_MODEL ?? "gemini-2.5-flash")),
-  );
+  // Each Gemini MODEL id has its OWN separate ~20 req/DAY free quota, so stacking
+  // flash + flash-lite roughly doubles the budget (and lite has a higher 10 RPM).
+  // Order is quality-major: exhaust full flash on every key first, then drop to
+  // the still-capable lite tier — so best quality is always used while available.
+  // GEMINI_MODEL overrides to a single id if you want to pin one.
+  const modelIds = env.GEMINI_MODEL
+    ? [env.GEMINI_MODEL]
+    : ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
+  const out: LanguageModelV3[] = [];
+  for (const modelId of modelIds) {
+    for (const apiKey of keys) {
+      out.push(base(createGoogleGenerativeAI({ apiKey })(modelId)));
+    }
+  }
+  return out;
 }
 
-function buildVisionModelList(primaryVision: LanguageModelV3): LanguageModelV3[] {
+// Builds an ordered fallback list of models for a role ("text" | "vision").
+// `gemini` expands to one model per configured key (it leads both chains so its
+// best-in-class quality is used first); the other providers contribute their
+// role-specific model. Reasoning is stripped from each via base().
+function buildModelList(
+  order: ProviderName[],
+  role: "text" | "vision",
+  primary: LanguageModelV3,
+): LanguageModelV3[] {
   const built: LanguageModelV3[] = [];
-  for (const name of VISION_ORDER) {
+  for (const name of order) {
     if (name === "gemini") {
-      // Expands to one model per Gemini key (or nothing if no key is set).
-      built.push(...geminiVisionModels());
+      built.push(...geminiModels());
       continue;
     }
     if (!hasKey(name)) continue;
     try {
-      built.push(base(buildModels(name).vision));
+      built.push(base(buildModels(name)[role]));
     } catch {
-      // Misconfigured provider — skip rather than break the vision chain.
+      // Misconfigured provider — skip rather than break the chain.
     }
   }
-  return built.length > 0 ? built : [base(primaryVision)];
+  return built.length > 0 ? built : [base(primary)];
 }
 
 export const PROVIDER = resolveProviderName();
 const primaryModels = buildModels(PROVIDER);
-const fallbackModels = buildFallbackModels(PROVIDER);
 
-// Wrap every underlying model with the reasoning-stripping base so that, even
-// when the fallback mixes providers mid-loop, no provider receives another's
-// reasoning_content. Only the text model does tool calling, so only it needs the
-// malformed-tool-call retry. Both paths get cross-provider rate-limit fallback.
-const textModel = withToolCallRetry(
-  withRateLimitFallback(base(primaryModels.text), fallbackModels ? base(fallbackModels.text) : null),
-);
+// Text/tools: Gemini → Groq → OpenRouter, folded into a fallback chain and
+// wrapped with the malformed-tool-call retry (Groq occasionally garbles a tool
+// call). Every model is reasoning-stripped via base() so mixing providers
+// mid-loop can't leak another's reasoning_content.
+const textModelList = buildModelList(TEXT_ORDER, "text", primaryModels.text);
+const textModel = withToolCallRetry(chainFallback(textModelList));
 
 // The ordered vision models (gemini key1, gemini key2, groq scout, openrouter…).
 // Exposed as a LIST — not just a folded rate-limit chain — because the vision
 // call does STRUCTURED output, which can fail to parse (AI_NoObjectGeneratedError)
 // without any rate-limit error. identifyFood walks this list so a parse failure
 // (not only a quota hit) falls through to the next model.
-const visionModelList = buildVisionModelList(primaryModels.vision);
+const visionModelList = buildModelList(VISION_ORDER, "vision", primaryModels.vision);
 export function visionModels(): LanguageModelV3[] {
   return visionModelList;
 }

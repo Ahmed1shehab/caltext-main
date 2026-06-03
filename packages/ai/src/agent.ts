@@ -42,6 +42,10 @@ export function createCaltextAgent(systemPrompt: string, ctx: AgentOptions) {
   return new ToolLoopAgent({
     model,
     instructions: systemPrompt,
+    // Disable Gemini "thinking" on the agent loop: it would think on every tool
+    // step (3-5 per message), making chat slow, and tool orchestration doesn't
+    // need it. Namespaced under `google`, so Groq/OpenRouter fallbacks ignore it.
+    providerOptions: { google: { thinkingConfig: { thinkingBudget: 0 } } },
     tools: {
       identifyFood: createIdentifyFoodTool(ctx.imageUrl),
       lookupNutrition,
