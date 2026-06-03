@@ -51,6 +51,22 @@ function isRateLimited(err: unknown): boolean {
   );
 }
 
+// Whether an error is worth retrying on a DIFFERENT provider. Covers rate limits
+// AND generic/transient server-side failures (5xx, "Provider returned error",
+// overloaded, service unavailable, network resets) — anything where the SAME
+// request might succeed on another provider. We deliberately do NOT fall over on
+// plain client errors (4xx other than 429), which would just fail again.
+function shouldFallover(err: unknown): boolean {
+  if (isRateLimited(err)) return true;
+  const e = err as { message?: unknown; statusCode?: unknown; status?: unknown };
+  const status = typeof e?.statusCode === "number" ? e.statusCode : e?.status;
+  if (typeof status === "number" && status >= 500) return true;
+  const msg = String(e?.message ?? err);
+  return /provider returned error|service unavailable|overloaded|internal server error|bad gateway|gateway timeout|temporarily unavailable|ECONNRESET|ETIMEDOUT|ENOTFOUND|fetch failed|\b5\d\d\b/i.test(
+    msg,
+  );
+}
+
 function withRateLimitFallback(
   primary: LanguageModelV3,
   fallback: LanguageModelV3 | null,
@@ -64,9 +80,10 @@ function withRateLimitFallback(
         try {
           return await doGenerate();
         } catch (err) {
-          if (!isRateLimited(err)) throw err;
-          // Primary provider is throttled — retry the identical request on the
-          // fallback provider. doGenerate already exhausted the SDK's backoff.
+          if (!shouldFallover(err)) throw err;
+          // Primary provider failed in a way that another provider might handle
+          // (throttled / 5xx / transient) — retry the identical request on the
+          // fallback. doGenerate already exhausted the SDK's backoff.
           return await fallback.doGenerate(params);
         }
       },
