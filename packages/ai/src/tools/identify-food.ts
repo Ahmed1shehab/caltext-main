@@ -1,6 +1,6 @@
 import { tool } from "ai";
-import { chatModel } from "../model";
-import { ciEnum, generateStructured } from "../structured";
+import { visionModels } from "../model";
+import { ciEnum, generateStructuredAcross } from "../structured";
 import { log } from "evlog";
 import { z } from "zod";
 
@@ -103,12 +103,18 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
           dataUrl = `data:${contentType};base64,${base64}`;
         }
 
-        const obj = await generateStructured({
-          model: chatModel(true),
+        const models = visionModels();
+        let usedModelIndex = 0;
+        const obj = await generateStructuredAcross(
+          models,
+          {
           schema: foodIdentificationSchema,
           // A real plate has a handful of items; cap output so a degenerate
           // model can't run away generating hundreds of repeated lines.
-          maxOutputTokens: 1500,
+          maxOutputTokens: 2000,
+          // Same-model retries rarely fix a parse failure; fail over to the next
+          // vision model quickly instead (the list provides the redundancy).
+          maxRetries: 1,
           // Gemini 2.5 Flash is a thinking model: by default it spends hundreds
           // of tokens "thinking" before answering, which eats into the output
           // budget above (risking truncated JSON) and burns its scarce free
@@ -124,10 +130,16 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
               ],
             },
           ],
-        });
+          },
+          (i) => {
+            usedModelIndex = i;
+          },
+        );
 
         log.info({
           tool: "identifyFood",
+          visionModelIndex: usedModelIndex,
+          visionModelCount: models.length,
           itemCount: obj.items.length,
           items: obj.items.map((i) => ({
             name: i.name,

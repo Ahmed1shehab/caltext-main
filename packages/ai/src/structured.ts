@@ -60,6 +60,33 @@ export async function generateStructured<T>(args: StructuredArgs<T>): Promise<T>
 }
 
 /**
+ * Tries each model in order, returning the first that produces a valid object.
+ * Unlike the model-level rate-limit fallback (which only catches quota errors at
+ * the provider layer), this catches ANY failure — including
+ * AI_NoObjectGeneratedError when a model's structured output can't be parsed —
+ * and falls through to the next model. Reports which model index succeeded so the
+ * caller can log it. Throws the last error if every model fails.
+ */
+export async function generateStructuredAcross<T>(
+  models: LanguageModelV3[],
+  args: Omit<StructuredBase<T>, "model"> & ({ prompt: string } | { messages: ModelMessage[] }),
+  onSuccess?: (modelIndex: number) => void,
+): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < models.length; i++) {
+    try {
+      const result = await generateStructured({ ...args, model: models[i]! } as StructuredArgs<T>);
+      onSuccess?.(i);
+      return result;
+    } catch (err) {
+      lastErr = err;
+      // Try the next model on any error (parse failure, quota, transient).
+    }
+  }
+  throw lastErr;
+}
+
+/**
  * Case-insensitive enum. GLM in json_object mode often returns enum values with
  * the wrong casing (e.g. "High" instead of "high"); this lowercases the model's
  * output before validating so it still matches.

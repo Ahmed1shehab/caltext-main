@@ -328,7 +328,7 @@ function geminiVisionModels(): LanguageModelV3[] {
   );
 }
 
-function buildVisionModel(primaryVision: LanguageModelV3): LanguageModelV3 {
+function buildVisionModelList(primaryVision: LanguageModelV3): LanguageModelV3[] {
   const built: LanguageModelV3[] = [];
   for (const name of VISION_ORDER) {
     if (name === "gemini") {
@@ -343,7 +343,7 @@ function buildVisionModel(primaryVision: LanguageModelV3): LanguageModelV3 {
       // Misconfigured provider — skip rather than break the vision chain.
     }
   }
-  return built.length > 0 ? chainFallback(built) : base(primaryVision);
+  return built.length > 0 ? built : [base(primaryVision)];
 }
 
 export const PROVIDER = resolveProviderName();
@@ -357,7 +357,17 @@ const fallbackModels = buildFallbackModels(PROVIDER);
 const textModel = withToolCallRetry(
   withRateLimitFallback(base(primaryModels.text), fallbackModels ? base(fallbackModels.text) : null),
 );
-const visionModel = buildVisionModel(primaryModels.vision);
+
+// The ordered vision models (gemini key1, gemini key2, groq scout, openrouter…).
+// Exposed as a LIST — not just a folded rate-limit chain — because the vision
+// call does STRUCTURED output, which can fail to parse (AI_NoObjectGeneratedError)
+// without any rate-limit error. identifyFood walks this list so a parse failure
+// (not only a quota hit) falls through to the next model.
+const visionModelList = buildVisionModelList(primaryModels.vision);
+export function visionModels(): LanguageModelV3[] {
+  return visionModelList;
+}
+const visionModel = chainFallback(visionModelList);
 
 export function chatModel(hasImage = false): LanguageModelV3 {
   return hasImage ? visionModel : textModel;
