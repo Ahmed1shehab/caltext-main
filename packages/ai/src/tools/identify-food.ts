@@ -42,7 +42,9 @@ export const foodIdentificationSchema = z.object({
   sceneContext: z
     .string()
     .nullish()
-    .describe("Visible reference objects: plate size, utensils, hands. Null if none."),
+    .describe(
+      "ONE short phrase (max 15 words) naming visible scale references, e.g. 'dinner plate, fork'. Do NOT describe the food, lighting, or write prose. Null if none.",
+    ),
   nutritionLabel: nutritionLabelSchema
     .nullish()
     .describe(
@@ -76,7 +78,7 @@ If you see a packaged food or drink product:
 - Return these in the "nutritionLabel" field. Leave the "items" array empty.
 - If the nutrition label is not visible or too blurry to read, identify the product by name and return it as a single item in the "items" array with your best weight and nutrition estimate.
 
-Return your analysis as structured JSON.`;
+Return your analysis as structured JSON. Be concise: do NOT write prose or long descriptions in any field. Keep "sceneContext" to one short phrase. Output only the JSON object.`;
 
 export function createIdentifyFoodTool(contextImageUrl?: string) {
   return tool({
@@ -110,8 +112,10 @@ export function createIdentifyFoodTool(contextImageUrl?: string) {
           {
           schema: foodIdentificationSchema,
           // A real plate has a handful of items; cap output so a degenerate
-          // model can't run away generating hundreds of repeated lines.
-          maxOutputTokens: 2000,
+          // model can't run away. Headroom above the typical response so a
+          // slightly verbose model (Gemini 2.5 can over-describe) still closes
+          // the JSON instead of truncating mid-object → parse failure.
+          maxOutputTokens: 3000,
           // Same-model retries rarely fix a parse failure; fail over to the next
           // vision model quickly instead (the list provides the redundancy).
           maxRetries: 1,
